@@ -6,8 +6,10 @@ import { useGameStore } from '../store/gameStore';
 import { BUILDINGS } from '../data/campusData';
 import { CharacterBody, animateWalk } from './NPC';
 
-const SPEED          = 0.18;
-const SPRINT_MULT    = 2.2;
+const MAX_SPEED      = 0.22;
+const SPRINT_MULT    = 2.0;
+const ACCEL          = 0.12;   // acceleration lerp factor
+const DECEL          = 0.10;   // deceleration lerp factor
 const CAM_DISTANCE   = 14;
 const CAM_HEIGHT     = 7;
 const PROXIMITY_DIST = 14;
@@ -33,6 +35,7 @@ export default function Player() {
   const yawRef     = useRef(0);
   const pitchRef   = useRef(-0.2);
   const walkPhase  = useRef(0);
+  const velRef     = useRef(new THREE.Vector3()); // smooth velocity
   const { camera } = useThree();
 
   const [cameraMode, setCameraMode] = useState('third');
@@ -50,14 +53,29 @@ export default function Player() {
 
   useEffect(() => {
     const down = (e) => {
-      keysRef.current[e.key.toLowerCase()] = true;
-      if (e.key.toLowerCase() === 'v') setCameraMode((p) => (p === 'third' ? 'first' : 'third'));
-      if (e.key.toLowerCase() === 'e' && nearbyBuilding) {
+      // Support WASD + Arrow keys
+      const k = e.key;
+      if (k === 'ArrowUp')    keysRef.current['w'] = true;
+      if (k === 'ArrowDown')  keysRef.current['s'] = true;
+      if (k === 'ArrowLeft')  keysRef.current['a'] = true;
+      if (k === 'ArrowRight') keysRef.current['d'] = true;
+      keysRef.current[k.toLowerCase()] = true;
+      if (k.toLowerCase() === 'v') setCameraMode((p) => (p === 'third' ? 'first' : 'third'));
+      if (k.toLowerCase() === 'e' && nearbyBuilding) {
         openInfoPanel(nearbyBuilding);
         visitBuilding(nearbyBuilding.name);
       }
+      // Prevent arrow keys from scrolling the page
+      if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(k)) e.preventDefault();
     };
-    const up      = (e) => { keysRef.current[e.key.toLowerCase()] = false; };
+    const up = (e) => {
+      const k = e.key;
+      if (k === 'ArrowUp')    keysRef.current['w'] = false;
+      if (k === 'ArrowDown')  keysRef.current['s'] = false;
+      if (k === 'ArrowLeft')  keysRef.current['a'] = false;
+      if (k === 'ArrowRight') keysRef.current['d'] = false;
+      keysRef.current[k.toLowerCase()] = false;
+    };
     const onMouse = (e) => {
       if (!document.pointerLockElement) return;
       yawRef.current   -= e.movementX * 0.002;
@@ -80,39 +98,57 @@ export default function Player() {
     const yaw    = yawRef.current;
     const pitch  = pitchRef.current;
     const sprint = !!keysRef.current['shift'];
-    const speed  = SPEED * (sprint ? SPRINT_MULT : 1);
+    const topSpeed = MAX_SPEED * (sprint ? SPRINT_MULT : 1);
 
+    // Build desired direction from input (camera-relative)
     const forward = new THREE.Vector3(-Math.sin(yaw), 0, -Math.cos(yaw));
     const right   = new THREE.Vector3( Math.cos(yaw), 0, -Math.sin(yaw));
-    const dir     = new THREE.Vector3();
+    const inputDir = new THREE.Vector3();
 
-    if (keysRef.current['w']) dir.add(forward);
-    if (keysRef.current['s']) dir.sub(forward);
-    if (keysRef.current['d']) dir.add(right);
-    if (keysRef.current['a']) dir.sub(right);
+    if (keysRef.current['w']) inputDir.add(forward);
+    if (keysRef.current['s']) inputDir.sub(forward);
+    if (keysRef.current['d']) inputDir.add(right);
+    if (keysRef.current['a']) inputDir.sub(right);
 
-    const moving = dir.lengthSq() > 0;
+    const hasInput = inputDir.lengthSq() > 0;
+
+    // Smooth velocity — accelerate toward target, decelerate when no input
+    const vel = velRef.current;
+    if (hasInput) {
+      inputDir.normalize().multiplyScalar(topSpeed);
+      vel.lerp(inputDir, ACCEL);
+    } else {
+      vel.lerp(new THREE.Vector3(0, 0, 0), DECEL);
+    }
+
+    const moving = vel.lengthSq() > 0.00005;
     setIsMoving(moving);
-    setIsSprinting(sprint && moving);
+    setIsSprinting(sprint && hasInput);
 
     if (moving) {
-      dir.normalize();
-      const nextPos = playerRef.current.position.clone().addScaledVector(dir, speed);
+      const nextPos = playerRef.current.position.clone().add(vel);
       nextPos.x = Math.max(-110, Math.min(110, nextPos.x));
       nextPos.z = Math.max(-130, Math.min(90,  nextPos.z));
       playerRef.current.position.copy(nextPos);
-      playerRef.current.rotation.y = THREE.MathUtils.lerp(
-        playerRef.current.rotation.y, Math.atan2(-dir.x, -dir.z), 0.18
-      );
-      walkPhase.current += speed * (sprint ? 9 : 7);
+
+      // Smoothly rotate character to face movement direction
+      const targetYaw = Math.atan2(-vel.x, -vel.z);
+      const curYaw    = playerRef.current.rotation.y;
+      // Shortest-path yaw lerp
+      let diff = targetYaw - curYaw;
+      while (diff >  Math.PI) diff -= 2 * Math.PI;
+      while (diff < -Math.PI) diff += 2 * Math.PI;
+      playerRef.current.rotation.y += diff * 0.14;
+
+      walkPhase.current += vel.length() * (sprint ? 9 : 7);
     }
 
-    // GTA-style walk
-    const swing   = moving ? (sprint ? 0.72 : 0.52) : 0;
-    const knee    = moving ? (sprint ? 0.88 : 0.68) : 0;
+    // GTA-style walk animation
+    const swing = moving ? (sprint ? 0.72 : 0.52) : 0;
+    const knee  = moving ? (sprint ? 0.88 : 0.68) : 0;
     animateWalk(refs, walkPhase.current, swing, knee, moving, 0.045);
 
-    playerRef.current.position.y = moving ? Math.abs(Math.sin(walkPhase.current)) * 0.025 * 0.5 : 0;
+    playerRef.current.position.y = moving ? Math.abs(Math.sin(walkPhase.current)) * 0.012 : 0;
 
     // Camera
     const pp = playerRef.current.position;

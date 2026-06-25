@@ -1,7 +1,4 @@
-import { useRef } from 'react';
-import { useFrame } from '@react-three/fiber';
 import { Text } from '@react-three/drei';
-import * as THREE from 'three';
 import { useGameStore } from '../store/gameStore';
 
 // Generic multi-floor building
@@ -43,45 +40,165 @@ function GenericBlock({ position, size, color, accentColor, floors = 3, hasRoof 
   );
 }
 
-// IT Park — white 3-storey, blue accent stripes, glass pyramid
+// IT Park — 3D procedural build matching the real KEC IT Park
+// Real building: white/cream low-rise with iconic circular drum tower at center,
+// wide wings both sides, large windows, entrance columns & steps, palm trees
 function ITParkBuilding({ position, size }) {
   const [w, h, d] = size;
+  const white = '#f0ede8';
+  const offWhite = '#e8e4de';
+  const windowBlue = '#a8c8e8';
+  const trimGray = '#c8c4bc';
+
   return (
     <group position={position}>
-      <mesh position={[0, h / 2, 0]} castShadow receiveShadow>
-        <boxGeometry args={[w, h, d]} />
-        <meshStandardMaterial color="#edf2f7" roughness={0.4} />
+
+      {/* ── LEFT WING ─────────────────────────────────────── */}
+      <mesh position={[-w * 0.28, h * 0.4, 0]} castShadow receiveShadow>
+        <boxGeometry args={[w * 0.36, h * 0.8, d]} />
+        <meshStandardMaterial color={white} roughness={0.5} />
       </mesh>
-      {[2.5, 5, 7.5, 10].map((y, i) => (
-        <mesh key={i} position={[0, y, d / 2 + 0.05]}>
-          <boxGeometry args={[w + 0.2, 0.35, 0.1]} />
-          <meshStandardMaterial color="#4a9edd" roughness={0.3} metalness={0.2} />
-        </mesh>
-      ))}
-      {[-1, 0, 1].map((row) =>
-        [-3, -1, 1, 3].map((col) => (
-          <mesh key={`${row}-${col}`} position={[col * 5, 5 + row * 3, d / 2 + 0.1]}>
-            <boxGeometry args={[2.5, 1.8, 0.05]} />
-            <meshStandardMaterial color="#87CEEB" transparent opacity={0.7} metalness={0.5} roughness={0.1} />
+      {/* Left wing windows — 2 rows x 4 cols */}
+      {[0, 1].map(row =>
+        [-3, -1, 1, 3].map(col => (
+          <mesh key={`lw-${row}-${col}`}
+            position={[-w * 0.28 + col * (w * 0.04), h * 0.22 + row * h * 0.35, d / 2 + 0.1]}>
+            <boxGeometry args={[w * 0.055, h * 0.22, 0.08]} />
+            <meshStandardMaterial color={windowBlue} transparent opacity={0.75} metalness={0.3} />
           </mesh>
         ))
       )}
-      {/* Glass Pyramid */}
-      <mesh position={[4, h + 3, 0]} castShadow>
-        <coneGeometry args={[4, 6, 4]} />
-        <meshStandardMaterial color="#a8d8ea" transparent opacity={0.55} metalness={0.6} roughness={0.1} />
+      {/* Left wing roof parapet */}
+      <mesh position={[-w * 0.28, h * 0.82, 0]}>
+        <boxGeometry args={[w * 0.38, h * 0.06, d + 0.4]} />
+        <meshStandardMaterial color={trimGray} roughness={0.5} />
       </mesh>
-      {/* Entrance canopy */}
-      <mesh position={[0, 2.5, d / 2 + 1.5]}>
-        <boxGeometry args={[8, 0.3, 3]} />
-        <meshStandardMaterial color="#4a9edd" roughness={0.3} />
+
+      {/* ── RIGHT WING ────────────────────────────────────── */}
+      <mesh position={[w * 0.28, h * 0.4, 0]} castShadow receiveShadow>
+        <boxGeometry args={[w * 0.36, h * 0.8, d]} />
+        <meshStandardMaterial color={white} roughness={0.5} />
       </mesh>
-      {[-2.5, 2.5].map((x, i) => (
-        <mesh key={i} position={[x, 1.2, d / 2 + 2.5]}>
-          <cylinderGeometry args={[0.22, 0.22, 2.4, 8]} />
-          <meshStandardMaterial color="#cdd6e0" roughness={0.4} />
+      {/* Right wing windows */}
+      {[0, 1].map(row =>
+        [-3, -1, 1, 3].map(col => (
+          <mesh key={`rw-${row}-${col}`}
+            position={[w * 0.28 + col * (w * 0.04), h * 0.22 + row * h * 0.35, d / 2 + 0.1]}>
+            <boxGeometry args={[w * 0.055, h * 0.22, 0.08]} />
+            <meshStandardMaterial color={windowBlue} transparent opacity={0.75} metalness={0.3} />
+          </mesh>
+        ))
+      )}
+      {/* Right wing roof parapet */}
+      <mesh position={[w * 0.28, h * 0.82, 0]}>
+        <boxGeometry args={[w * 0.38, h * 0.06, d + 0.4]} />
+        <meshStandardMaterial color={trimGray} roughness={0.5} />
+      </mesh>
+
+      {/* ── CENTER BODY (ground floor connecting block) ───── */}
+      <mesh position={[0, h * 0.25, 0]} castShadow receiveShadow>
+        <boxGeometry args={[w * 0.32, h * 0.5, d]} />
+        <meshStandardMaterial color={white} roughness={0.5} />
+      </mesh>
+
+      {/* ── ICONIC CIRCULAR DRUM TOWER (center top) ────────── */}
+      {/* Drum cylinder */}
+      <mesh position={[0, h * 0.72, 0]} castShadow>
+        <cylinderGeometry args={[w * 0.11, w * 0.11, h * 0.55, 32]} />
+        <meshStandardMaterial color={offWhite} roughness={0.45} />
+      </mesh>
+      {/* Drum horizontal band top */}
+      <mesh position={[0, h * 1.0, 0]}>
+        <cylinderGeometry args={[w * 0.115, w * 0.115, h * 0.06, 32]} />
+        <meshStandardMaterial color={trimGray} roughness={0.4} />
+      </mesh>
+      {/* Drum horizontal band bottom */}
+      <mesh position={[0, h * 0.46, 0]}>
+        <cylinderGeometry args={[w * 0.115, w * 0.115, h * 0.06, 32]} />
+        <meshStandardMaterial color={trimGray} roughness={0.4} />
+      </mesh>
+      {/* Drum windows (slits around cylinder) */}
+      {Array.from({ length: 8 }, (_, i) => (
+        <mesh key={`dw-${i}`}
+          position={[
+            Math.sin(i * Math.PI / 4) * (w * 0.112),
+            h * 0.72,
+            Math.cos(i * Math.PI / 4) * (w * 0.112)
+          ]}
+          rotation={[0, i * Math.PI / 4, 0]}>
+          <boxGeometry args={[0.1, h * 0.28, w * 0.04]} />
+          <meshStandardMaterial color={windowBlue} transparent opacity={0.8} metalness={0.3} />
         </mesh>
       ))}
+      {/* IT PARK text on drum */}
+      <Text
+        position={[0, h * 0.72, w * 0.115]}
+        fontSize={h * 0.09}
+        color="#1a1a2e"
+        anchorX="center"
+        fontWeight="bold"
+      >IT PARK</Text>
+
+      {/* ── ENTRANCE PORTICO (center front) ───────────────── */}
+      {/* Canopy roof */}
+      <mesh position={[0, h * 0.52, d / 2 + 2.5]} castShadow>
+        <boxGeometry args={[w * 0.28, h * 0.05, 5]} />
+        <meshStandardMaterial color={trimGray} roughness={0.5} />
+      </mesh>
+      {/* Entrance columns */}
+      {[-w * 0.09, -w * 0.03, w * 0.03, w * 0.09].map((x, i) => (
+        <mesh key={`col-${i}`} position={[x, h * 0.26, d / 2 + 2]}>
+          <cylinderGeometry args={[0.28, 0.32, h * 0.52, 12]} />
+          <meshStandardMaterial color={white} roughness={0.4} />
+        </mesh>
+      ))}
+      {/* Entrance steps */}
+      {[0, 1, 2, 3].map(i => (
+        <mesh key={`step-${i}`} position={[0, i * 0.32, d / 2 + 4.6 + i * 0.55]}>
+          <boxGeometry args={[w * 0.3, 0.32, 1.2]} />
+          <meshStandardMaterial color="#d8d4cc" roughness={0.8} />
+        </mesh>
+      ))}
+
+      {/* ── GROUND PAD ────────────────────────────────────── */}
+      <mesh position={[0, 0.05, 0]} receiveShadow>
+        <boxGeometry args={[w + 4, 0.1, d + 8]} />
+        <meshStandardMaterial color="#c8c0a8" roughness={0.9} />
+      </mesh>
+      {/* Front lawn */}
+      <mesh position={[0, 0.06, d / 2 + 7]} receiveShadow>
+        <boxGeometry args={[w + 8, 0.08, 8]} />
+        <meshStandardMaterial color="#4a8a3a" roughness={1} />
+      </mesh>
+
+      {/* ── PALM TREES (flanking both sides) ──────────────── */}
+      {[-w * 0.52, -w * 0.38, w * 0.38, w * 0.52].map((x, i) => (
+        <group key={`palm-${i}`} position={[x, 0, d / 2 + 3]}>
+          {/* Trunk */}
+          <mesh position={[0, 6, 0]} castShadow>
+            <cylinderGeometry args={[0.2, 0.3, 12, 8]} />
+            <meshStandardMaterial color="#8B6914" roughness={0.85} />
+          </mesh>
+          {/* Fronds */}
+          {[0, 1, 2, 3, 4, 5].map(j => (
+            <mesh key={j}
+              position={[
+                Math.sin(j * Math.PI / 3) * 2.2,
+                12.5,
+                Math.cos(j * Math.PI / 3) * 2.2
+              ]}
+              rotation={[
+                Math.sin(j * Math.PI / 3) * 0.55,
+                j * Math.PI / 3,
+                Math.cos(j * Math.PI / 3) * 0.3
+              ]}>
+              <boxGeometry args={[0.12, 0.08, 3.2]} />
+              <meshStandardMaterial color="#2a6a2a" roughness={0.75} />
+            </mesh>
+          ))}
+        </group>
+      ))}
+
     </group>
   );
 }

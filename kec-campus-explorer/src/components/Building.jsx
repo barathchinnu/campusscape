@@ -1,4 +1,4 @@
-import { Text } from '@react-three/drei';
+import { Text, Html } from '@react-three/drei';
 import { useGameStore } from '../store/gameStore';
 
 // Generic multi-floor building
@@ -512,16 +512,35 @@ export default function Building({ data }) {
         </mesh>
       )}
       {data.id !== 'sportsground' && (
-        <Text
+        <Html
           position={[data.position[0], data.position[1] + data.size[1] + 2.5, data.position[2]]}
-          fontSize={1.6}
-          color="white"
-          anchorX="center"
-          outlineWidth={0.12}
-          outlineColor="#000000"
+          center
+          distanceFactor={35}
+          style={{ pointerEvents: 'none' }}
         >
-          {data.emoji} {data.name}
-        </Text>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            background: 'rgba(15, 23, 42, 0.85)',
+            backdropFilter: 'blur(8px)',
+            color: '#ffffff',
+            padding: '6px 14px',
+            borderRadius: '24px',
+            fontSize: '16px',
+            fontWeight: 'bold',
+            fontFamily: "'Outfit', 'Inter', system-ui, sans-serif",
+            whiteSpace: 'nowrap',
+            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.5)',
+            border: `2px solid ${data.accentColor || '#38bdf8'}`,
+            textShadow: '0 1px 2px rgba(0,0,0,0.6)',
+          }}>
+            <span style={{ fontSize: '20px', display: 'inline-flex', alignItems: 'center' }}>
+              {data.emoji}
+            </span>
+            <span>{data.name}</span>
+          </div>
+        </Html>
       )}
     </group>
   );

@@ -6,14 +6,14 @@ import { useGameStore } from '../store/gameStore';
 
 // Campus bus route stops (world positions)
 export const BUS_ROUTE = [
-  new THREE.Vector3( 70,  0,  80),   // Bus Stand
-  new THREE.Vector3( 55,  0,  40),   // Near IT Park
-  new THREE.Vector3( 20,  0,  20),   // Admin area
-  new THREE.Vector3(  0,  0, -30),   // Academic core
-  new THREE.Vector3(-40,  0, -25),   // EEE / West block
-  new THREE.Vector3(-85,  0,  20),   // Sports Ground
-  new THREE.Vector3(-75,  0,  50),   // Ladies Hostel
-  new THREE.Vector3( 70,  0,  70),   // Back to Bus Stand
+  new THREE.Vector3(70, 0, 80),   // Bus Stand
+  new THREE.Vector3(55, 0, 40),   // Near IT Park
+  new THREE.Vector3(20, 0, 20),   // Admin area
+  new THREE.Vector3(0, 0, -30),   // Academic core
+  new THREE.Vector3(-40, 0, -25),   // EEE / West block
+  new THREE.Vector3(-85, 0, 20),   // Sports Ground
+  new THREE.Vector3(-75, 0, 50),   // Ladies Hostel
+  new THREE.Vector3(70, 0, 70),   // Back to Bus Stand
 ];
 
 export const STOP_NAMES = [
@@ -36,7 +36,7 @@ function BusMesh({ busRef, speedFactor }) {
   const yellow = '#f39c12';
   const glass = '#aed6f1';
   const metal = '#7f8c8d';
-  
+
   // Refs for rotating wheels
   const flWheel = useRef();
   const frWheel = useRef();
@@ -282,7 +282,7 @@ function BusMesh({ busRef, speedFactor }) {
         <meshStandardMaterial color="#111" />
       </mesh>
       <Text position={[0, 2.45, 3.79]} fontSize={0.14} color="#f39c12" anchorX="center" outlineWidth={0.02} outlineColor="#000">
-        KEC EXPRESS BUS 🚌
+        KEC EXPRESS BUS
       </Text>
     </group>
   );
@@ -497,7 +497,7 @@ export default function Bus() {
     const from = BUS_ROUTE[seg];
     const to = BUS_ROUTE[(seg + 1) % BUS_ROUTE.length];
     const segLen = from.distanceTo(to);
-    
+
     // Increment segment progress
     if (speed > 0) {
       const step = (speed * delta) / segLen;

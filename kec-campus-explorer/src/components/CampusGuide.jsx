@@ -116,7 +116,7 @@ export default function CampusGuide() {
 
       {/* Name Text */}
       <Text position={[0, 2.5, 0]} fontSize={0.28} color="#e67e22" anchorX="center" outlineWidth={0.03} outlineColor="#000">
-        AI Campus Guide ℹ️
+        AI Campus Guide
       </Text>
 
       {/* Near prompt */}

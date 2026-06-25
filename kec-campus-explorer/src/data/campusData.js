@@ -1,20 +1,20 @@
 // ============================================================
-// KEC CAMPUS DATA â€” Based on real 167-acre Kongu Engineering
+// KEC CAMPUS DATA — Based on real 167-acre Kongu Engineering
 // College campus, Perundurai, Erode, Tamil Nadu
 // ============================================================
 
-// â”€â”€ COORDINATE SYSTEM â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── COORDINATE SYSTEM ───────────────────────────────────────
 // +X = East   -X = West
 // +Z = South (toward entrance/gate)  -Z = North (into campus interior)
 // Campus entrance is at the SOUTH (positive Z), buildings spread northward
 // This matches the real KEC satellite layout: gate at south/SE,
 // IT Park + Bus Stand near NE, main academic core in center,
 // Library in center-north, hostels on east/west sides.
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ────────────────────────────────────────────────────────────
 
 export const BUILDINGS = [
 
-  // â”€â”€ MAIN ENTRANCE / ADMIN (center-south, first thing you see) â”€â”€
+  // ── MAIN ENTRANCE / ADMIN (center-south, first thing you see) ──
   {
     id: 'adminblock',
     name: 'Admin Block',
@@ -23,17 +23,17 @@ export const BUILDINGS = [
     color: '#d8e8f0',
     accentColor: '#f5d55a',
     roofColor: '#b8ccd8',
-    emoji: 'ðŸ›ï¸',
+    emoji: '🏛️',
     zone: 'administration',
     info: {
-      description: 'The Administrative Block of Kongu Engineering College â€” central hub for principal\'s office, HR, admissions, and all administrative services.',
-      highlights: ['Principal\'s Office', 'Admissions & Registration', 'HR & Payroll Dept', 'Finance & Accounts Office', '"ADMINISTRATIVE BLOCK" Gold Lettering Facade', 'Wi-Fi Enabled Zones'],
-      timing: '9:00 AM â€“ 5:00 PM (Monâ€“Sat)',
+      description: "The Administrative Block of Kongu Engineering College — central hub for principal's office, HR, admissions, and all administrative services.",
+      highlights: ["Principal's Office", 'Admissions & Registration', 'HR & Payroll Dept', 'Finance & Accounts Office', '"ADMINISTRATIVE BLOCK" Gold Lettering Facade', 'Wi-Fi Enabled Zones'],
+      timing: '9:00 AM – 5:00 PM (Mon–Sat)',
       contact: 'admin@kec.ac.in',
     },
   },
 
-  // â”€â”€ BUS STAND (NE corner, near main gate) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── BUS STAND (NE corner, near main gate) ────────────────────
   {
     id: 'busstand',
     name: 'Bus Stand',
@@ -42,17 +42,17 @@ export const BUILDINGS = [
     color: '#f5f0e8',
     accentColor: '#f5a623',
     roofColor: '#e8d4a0',
-    emoji: 'ðŸšŒ',
+    emoji: '🚌',
     zone: 'transport',
     info: {
-      description: 'KEC Bus Stand â€” home to the famous fleet of yellow Kongu buses serving 80+ routes across Erode, Coimbatore, Salem and nearby districts. GPS-tracked fleet.',
+      description: 'KEC Bus Stand — home to the famous fleet of yellow Kongu buses serving 80+ routes across Erode, Coimbatore, Salem and nearby districts. GPS-tracked fleet.',
       highlights: ['80+ Bus Routes', 'Iconic Yellow Kongu Fleet', 'Connects Erode, Coimbatore, Salem', 'Morning 6:00 AM & Evening 5:30 PM', 'GPS Tracked Vehicles', 'Dedicated Women\'s Safety Bus'],
-      timing: '6:00 AM â€“ 8:00 PM',
+      timing: '6:00 AM – 8:00 PM',
       contact: 'transport@kec.ac.in',
     },
   },
 
-  // â”€â”€ IT PARK (NE sector, just west of bus stand) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── IT PARK (NE sector, just west of bus stand) ───────────────
   {
     id: 'itpark',
     name: 'IT Park',
@@ -61,17 +61,17 @@ export const BUILDINGS = [
     color: '#edf2f7',
     accentColor: '#4a9edd',
     roofColor: '#c8d8e8',
-    emoji: 'ðŸ’»',
+    emoji: '💻',
     zone: 'tech',
     info: {
       description: 'The KEC IT Park (KonguTBI) is a state-of-the-art facility housing 50+ computer labs, the AI & ML Centre, Software Development Hub and the Technology Business Incubator.',
       highlights: ['50+ High-end Computer Labs', 'AI & Machine Learning Centre', 'Software Development Hub', 'Technology Business Incubator (TBI)', 'Glass Drum Tower', 'Research Innovation Zone'],
-      timing: '8:00 AM â€“ 6:00 PM',
+      timing: '8:00 AM – 6:00 PM',
       contact: 'itpark@kec.ac.in',
     },
   },
 
-  // â”€â”€ CSE BLOCK (east side, near IT Park) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── CSE BLOCK (east side, near IT Park) ───────────────────────
   {
     id: 'cse',
     name: 'CSE Block',
@@ -80,17 +80,17 @@ export const BUILDINGS = [
     color: '#e8f4fd',
     accentColor: '#2980b9',
     roofColor: '#c0d8f0',
-    emoji: 'ðŸ–¥ï¸',
+    emoji: '🖥️',
     zone: 'academic',
     info: {
-      description: 'Computer Science & Engineering Department â€” the largest dept at KEC. Houses advanced computing labs, AI research centre and project rooms.',
+      description: 'Computer Science & Engineering Department — the largest dept at KEC. Houses advanced computing labs, AI research centre and project rooms.',
       highlights: ['CSE, AI-ML, AI-DS, CS-Design Courses', 'NVIDIA GPU Research Lab', 'Coding Contest Arena', 'Software Project Lab', 'IBM Centre of Excellence'],
-      timing: '8:00 AM â€“ 5:30 PM',
+      timing: '8:00 AM – 5:30 PM',
       contact: 'cse@kec.ac.in',
     },
   },
 
-  // â”€â”€ ECE BLOCK (center, part of main academic block) â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── ECE BLOCK (center, part of main academic block) ─────────
   {
     id: 'ece',
     name: 'ECE Block',
@@ -99,17 +99,17 @@ export const BUILDINGS = [
     color: '#fef9e7',
     accentColor: '#f39c12',
     roofColor: '#f0e0a0',
-    emoji: 'ðŸ“¡',
+    emoji: '📡',
     zone: 'academic',
     info: {
-      description: 'Electronics & Communication Engineering â€” cutting-edge labs for signal processing, VLSI design, embedded systems and wireless communication.',
+      description: 'Electronics & Communication Engineering — cutting-edge labs for signal processing, VLSI design, embedded systems and wireless communication.',
       highlights: ['VLSI Design Lab', 'Embedded Systems Lab', 'Signal Processing Lab', 'Wireless Communication Lab', 'Antenna & RF Lab'],
-      timing: '8:00 AM â€“ 5:30 PM',
+      timing: '8:00 AM – 5:30 PM',
       contact: 'ece@kec.ac.in',
     },
   },
 
-  // â”€â”€ MECHANICAL BLOCK (center of main academic) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── MECHANICAL BLOCK (center of main academic) ───────────────
   {
     id: 'mech',
     name: 'Mechanical Block',
@@ -118,17 +118,17 @@ export const BUILDINGS = [
     color: '#fdfefe',
     accentColor: '#7f8c8d',
     roofColor: '#d0d8e0',
-    emoji: 'âš™ï¸',
+    emoji: '⚙️',
     zone: 'academic',
     info: {
-      description: 'Mechanical Engineering â€” home to state-of-the-art workshops, CNC machines, CAD/CAM labs and the automobile engineering research area.',
+      description: 'Mechanical Engineering — home to state-of-the-art workshops, CNC machines, CAD/CAM labs and the automobile engineering research area.',
       highlights: ['CNC Machining Centre', 'CAD/CAM Lab', 'Thermal & Fluid Lab', 'Automobile Workshop', '3D Printing Lab', 'Robotics & Mechatronics Lab'],
-      timing: '8:00 AM â€“ 5:30 PM',
+      timing: '8:00 AM – 5:30 PM',
       contact: 'mech@kec.ac.in',
     },
   },
 
-  // â”€â”€ EEE BLOCK (center-west of main academic) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── EEE BLOCK (center-west of main academic) ─────────────────
   {
     id: 'eee',
     name: 'EEE Block',
@@ -137,17 +137,17 @@ export const BUILDINGS = [
     color: '#fdedec',
     accentColor: '#e74c3c',
     roofColor: '#f0c0b8',
-    emoji: 'âš¡',
+    emoji: '⚡',
     zone: 'academic',
     info: {
-      description: 'Electrical & Electronics Engineering â€” power systems, renewable energy labs, smart grid research and high voltage testing facilities.',
+      description: 'Electrical & Electronics Engineering — power systems, renewable energy labs, smart grid research and high voltage testing facilities.',
       highlights: ['Power Systems Lab', 'High Voltage Testing Lab', 'Solar Energy Research Centre', 'PLC/SCADA Lab', 'Smart Grid Lab'],
-      timing: '8:00 AM â€“ 5:30 PM',
+      timing: '8:00 AM – 5:30 PM',
       contact: 'eee@kec.ac.in',
     },
   },
 
-  // â”€â”€ LIBRARY (center-north, behind main academic) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── LIBRARY (center-north, behind main academic) ────────────
   {
     id: 'library',
     name: 'C.D. Memorial Library',
@@ -156,17 +156,17 @@ export const BUILDINGS = [
     color: '#f0e8d8',
     accentColor: '#c8a96e',
     roofColor: '#d4c4a8',
-    emoji: 'ðŸ“š',
+    emoji: '📚',
     zone: 'academic',
     info: {
-      description: 'C.D. Memorial Library â€” established 1984. A classical-style library with iconic columns, fountain courtyard, and over 1 lakh books plus extensive e-resources (IEEE, Springer, Elsevier).',
+      description: 'C.D. Memorial Library — established 1984. A classical-style library with iconic columns, fountain courtyard, and over 1 lakh books plus extensive e-resources (IEEE, Springer, Elsevier).',
       highlights: ['1,00,000+ Physical Books', 'IEEE & Springer Digital Access', 'WebOPAC Digital Search Portal', 'Air-Conditioned Reading Hall', 'Fountain Courtyard', 'High-Security CCTV Surveillance', 'Open All 7 Days'],
-      timing: '8:00 AM â€“ 8:00 PM',
+      timing: '8:00 AM – 8:00 PM',
       contact: 'library@kec.ac.in',
     },
   },
 
-  // â”€â”€ FOOD COURT (south of library) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── FOOD COURT (south of library) ─────────────────────────────
   {
     id: 'foodcourt',
     name: 'Food Court',
@@ -175,17 +175,17 @@ export const BUILDINGS = [
     color: '#f0f0f5',
     accentColor: '#888aaa',
     roofColor: '#d0d0e0',
-    emoji: 'ðŸ½ï¸',
+    emoji: '🍽️',
     zone: 'amenities',
     info: {
-      description: 'KEC Food Court (Kongu Canteen) â€” a modern dining facility with signature curved circular entrance. Serves hot South Indian meals, snacks and refreshments for 1500+ students per session.',
+      description: 'KEC Food Court (Kongu Canteen) — a modern dining facility with signature curved circular entrance. Serves hot South Indian meals, snacks and refreshments for 1500+ students per session.',
       highlights: ['South Indian Meals (Veg & Non-Veg)', 'Hot Snacks & Tea/Coffee Stalls', 'Fresh Juice & Beverage Corner', 'Air-Conditioned Seating', '1500+ Capacity Dining Hall', 'Affordable Student Pricing'],
-      timing: '7:30 AM â€“ 8:30 PM',
+      timing: '7:30 AM – 8:30 PM',
       contact: 'foodcourt@kec.ac.in',
     },
   },
 
-  // â”€â”€ AUDITORIUM (west side, near sports) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── AUDITORIUM (west side, near sports) ──────────────────────
   {
     id: 'auditorium',
     name: 'Auditorium',
@@ -194,17 +194,17 @@ export const BUILDINGS = [
     color: '#8B7355',
     accentColor: '#c8a96e',
     roofColor: '#6b5740',
-    emoji: 'ðŸŽ­',
+    emoji: '🎭',
     zone: 'events',
     info: {
-      description: 'Kongu Convention Centre â€” one of the largest auditoriums in India with 4,500 seating capacity, AC halls, hosting convocations, KONGU NITE cultural festivals and national conferences.',
+      description: 'Kongu Convention Centre — one of the largest auditoriums in India with 4,500 seating capacity, AC halls, hosting convocations, KONGU NITE cultural festivals and national conferences.',
       highlights: ['4500 Seating Capacity', 'Air-Conditioned Hall (2,00,000 sq ft)', 'National-Level Conferences', 'Annual Convocation Ceremony', 'KONGU NITE Cultural Festival', 'Indoor Sports Zone'],
       timing: 'Event Based',
       contact: 'events@kec.ac.in',
     },
   },
 
-  // â”€â”€ SPORTS GROUND (west, next to auditorium) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── SPORTS GROUND (west, next to auditorium) ─────────────────
   {
     id: 'sportsground',
     name: 'Sports Ground',
@@ -213,17 +213,17 @@ export const BUILDINGS = [
     color: '#2d6a2d',
     accentColor: '#27ae60',
     roofColor: '#2d6a2d',
-    emoji: 'ðŸŸï¸',
+    emoji: '🏟️',
     zone: 'sports',
     info: {
-      description: 'KEC Sports Ground â€” a massive open ground for cricket, football, athletics and outdoor sports. Adjacent to the indoor stadium with badminton, basketball courts.',
+      description: 'KEC Sports Ground — a massive open ground for cricket, football, athletics and outdoor sports. Adjacent to the indoor stadium with badminton, basketball courts.',
       highlights: ['Cricket Ground', 'Football & Athletics Field', 'Indoor Stadium (Badminton & Basketball)', 'Volleyball Court', 'Gymnasium & Fitness Centre'],
-      timing: '5:30 AM â€“ 8:00 PM',
+      timing: '5:30 AM – 8:00 PM',
       contact: 'sports@kec.ac.in',
     },
   },
 
-  // â”€â”€ BOYS HOSTELS (SE sector) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── BOYS HOSTELS (SE sector) ─────────────────────────────────
   {
     id: 'boyshostel',
     name: "Men's Hostels",
@@ -232,7 +232,7 @@ export const BUILDINGS = [
     color: '#eafaf1',
     accentColor: '#27ae60',
     roofColor: '#a8d8b8',
-    emoji: 'ðŸ ',
+    emoji: '🏠',
     zone: 'residential',
     info: {
       description: 'Seven dedicated men\'s hostels on campus: Dheeran, Valluvar, Ilango, Bharathi, Kamban, Ponnar & Sankar. Fully residential facilities with Wi-Fi and mess.',
@@ -242,7 +242,7 @@ export const BUILDINGS = [
     },
   },
 
-  // â”€â”€ GIRLS HOSTELS (SW sector) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── GIRLS HOSTELS (SW sector) ──────────────────────────────
   {
     id: 'girlshostel',
     name: "Ladies' Hostels",
@@ -251,7 +251,7 @@ export const BUILDINGS = [
     color: '#fdf2f8',
     accentColor: '#8e44ad',
     roofColor: '#d0a8e0',
-    emoji: 'ðŸ¡',
+    emoji: '🏡',
     zone: 'residential',
     info: {
       description: 'Three dedicated ladies\' hostels: Kaveri, Amaravathi and Bhavani. Secure and comfortable residential blocks with all modern amenities.',
@@ -261,7 +261,7 @@ export const BUILDINGS = [
     },
   },
 
-  // â”€â”€ AMENITIES BLOCK (center, near admin) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── AMENITIES BLOCK (center, near admin) ─────────────────────
   {
     id: 'amenities',
     name: 'Amenities Block',
@@ -270,12 +270,12 @@ export const BUILDINGS = [
     color: '#fef9e7',
     accentColor: '#d4ac0d',
     roofColor: '#e8d4a0',
-    emoji: 'ðŸª',
+    emoji: '🏪',
     zone: 'amenities',
     info: {
-      description: 'Central Amenities Block â€” houses the Dispensary (24/7 medical aid), KVB Bank & ATM, Post Office, and the campus stationery store.',
+      description: 'Central Amenities Block — houses the Dispensary (24/7 medical aid), KVB Bank & ATM, Post Office, and the campus stationery store.',
       highlights: ['Dispensary (24/7 Medical Aid)', 'KVB Bank & ATM', 'Post Office', 'Stationery & Xerox Shop', 'Student Help Desk'],
-      timing: '8:00 AM â€“ 6:00 PM',
+      timing: '8:00 AM – 6:00 PM',
       contact: 'admin@kec.ac.in',
     },
   },

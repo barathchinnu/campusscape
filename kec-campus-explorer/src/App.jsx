@@ -6,9 +6,16 @@ import Player from './components/Player';
 import NPC from './components/NPC';
 import Building from './components/Building';
 import Environment from './components/Environment';
+import Bus from './components/Bus';
 import HUD from './components/HUD';
 import InfoPanel from './components/InfoPanel';
 import MiniMap from './components/MiniMap';
+import GPSNav from './components/GPSNav';
+import PhotoMode from './components/PhotoMode';
+import VoiceAssistant from './components/VoiceAssistant';
+import CampusGuide from './components/CampusGuide';
+import Traffic from './components/Traffic';
+import Classroom from './components/Classroom';
 import { BUILDINGS, NPC_CONFIGS } from './data/campusData';
 
 function LoadingFallback() {
@@ -38,6 +45,9 @@ function GameScene() {
         />
       ))}
       <Player />
+      <Bus />
+      <CampusGuide />
+      <Traffic />
       <PointerLockControls />
     </>
   );
@@ -60,7 +70,7 @@ export default function App() {
       <Canvas
         shadows
         camera={{ position: [0, 25, 65], fov: 68, near: 0.1, far: 600 }}
-        gl={{ antialias: true, powerPreference: 'high-performance' }}
+        gl={{ antialias: true, powerPreference: 'high-performance', preserveDrawingBuffer: true }}
         style={{ position: 'absolute', top: 0, left: 0 }}
       >
         <Suspense fallback={<LoadingFallback />}>
@@ -68,10 +78,13 @@ export default function App() {
         </Suspense>
       </Canvas>
 
-      {/* UI Overlay */}
       <HUD />
       <InfoPanel />
       <MiniMap />
+      <GPSNav />
+      <PhotoMode />
+      <VoiceAssistant />
+      <Classroom />
 
       {/* Global fonts */}
       <style>{`

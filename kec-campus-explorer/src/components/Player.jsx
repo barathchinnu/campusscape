@@ -49,23 +49,43 @@ export default function Player() {
   const visitedBuildings  = useGameStore((s) => s.visitedBuildings);
   const setPlayerPosition = useGameStore((s) => s.setPlayerPosition);
 
+  const droneMode         = useGameStore((s) => s.droneMode);
+  const toggleDroneMode   = useGameStore((s) => s.toggleDroneMode);
+  const photoMode         = useGameStore((s) => s.photoMode);
+  const voiceAssistantActive = useGameStore((s) => s.voiceAssistantActive);
+  const setVoiceAssistantActive = useGameStore((s) => s.setVoiceAssistantActive);
+
+  // Bus sitting states
+  const isBoarded         = useGameStore((s) => s.isBoarded);
+  const busPosition       = useGameStore((s) => s.busPosition);
+  const busRotation       = useGameStore((s) => s.busRotation);
+
+  // Drone pan offset from player
+  const droneOffsetRef = useRef(new THREE.Vector3(0, 0, 0));
+  // Free camera position for photo mode
+  const freeCamPosRef  = useRef(new THREE.Vector3(0, 0, 0));
+  const freeCamInitialized = useRef(false);
+
   const refs = { hipsRef, spineRef, shoulderGrpRef, lThighRef, rThighRef, lShinRef, rShinRef, lAnkleRef, rAnkleRef, lArmRef, rArmRef, lForearmRef, rForearmRef, headRef };
 
   useEffect(() => {
     const down = (e) => {
-      // Support WASD + Arrow keys
       const k = e.key;
       if (k === 'ArrowUp')    keysRef.current['w'] = true;
       if (k === 'ArrowDown')  keysRef.current['s'] = true;
       if (k === 'ArrowLeft')  keysRef.current['a'] = true;
       if (k === 'ArrowRight') keysRef.current['d'] = true;
       keysRef.current[k.toLowerCase()] = true;
-      if (k.toLowerCase() === 'v') setCameraMode((p) => (p === 'third' ? 'first' : 'third'));
+
+      // Controls
+      if (k.toLowerCase() === 'c') setCameraMode((p) => (p === 'third' ? 'first' : 'third'));
+      if (k.toLowerCase() === 'g') toggleDroneMode();
+      if (k.toLowerCase() === 'v') setVoiceAssistantActive(!voiceAssistantActive);
+
       if (k.toLowerCase() === 'e' && nearbyBuilding) {
         openInfoPanel(nearbyBuilding);
         visitBuilding(nearbyBuilding.name);
       }
-      // Prevent arrow keys from scrolling the page
       if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(k)) e.preventDefault();
     };
     const up = (e) => {
@@ -90,9 +110,9 @@ export default function Player() {
       window.removeEventListener('keyup',     up);
       window.removeEventListener('mousemove', onMouse);
     };
-  }, [nearbyBuilding, openInfoPanel, visitBuilding]);
+  }, [nearbyBuilding, openInfoPanel, visitBuilding, voiceAssistantActive]);
 
-  useFrame(() => {
+  useFrame((_, delta) => {
     if (!playerRef.current) return;
 
     const yaw    = yawRef.current;
@@ -100,7 +120,10 @@ export default function Player() {
     const sprint = !!keysRef.current['shift'];
     const topSpeed = MAX_SPEED * (sprint ? SPRINT_MULT : 1);
 
-    // Build desired direction from input (camera-relative)
+    const pp = playerRef.current.position;
+    setPlayerPosition([pp.x, pp.y, pp.z]);
+
+    // Direction vectors
     const forward = new THREE.Vector3(-Math.sin(yaw), 0, -Math.cos(yaw));
     const right   = new THREE.Vector3( Math.cos(yaw), 0, -Math.sin(yaw));
     const inputDir = new THREE.Vector3();
@@ -111,63 +134,196 @@ export default function Player() {
     if (keysRef.current['a']) inputDir.sub(right);
 
     const hasInput = inputDir.lengthSq() > 0;
-
-    // Smooth velocity — accelerate toward target, decelerate when no input
     const vel = velRef.current;
-    if (hasInput) {
-      inputDir.normalize().multiplyScalar(topSpeed);
-      vel.lerp(inputDir, ACCEL);
+
+    if (droneMode) {
+      // 1. DRONE MODE
+      // Damping player movement
+      vel.set(0, 0, 0);
+      setIsMoving(false);
+      setIsSprinting(false);
+      animateWalk(refs, 0, 0, 0, false, 0);
+
+      // Pan drone offset
+      if (hasInput) {
+        inputDir.normalize().multiplyScalar(40 * delta); // pan speed
+        droneOffsetRef.current.add(inputDir);
+      }
+
+      // Position camera high above pan offset
+      const targetCamPos = new THREE.Vector3(
+        pp.x + droneOffsetRef.current.x,
+        75,
+        pp.z + droneOffsetRef.current.z
+      );
+      camera.position.lerp(targetCamPos, 0.1);
+
+      // Look straight down (or slightly angled based on pitch)
+      const lookPos = new THREE.Vector3(
+        pp.x + droneOffsetRef.current.x,
+        pp.y,
+        pp.z + droneOffsetRef.current.z
+      );
+      camera.lookAt(lookPos);
+
+      // Reset free cam
+      freeCamInitialized.current = false;
+
+    } else if (photoMode) {
+      // 2. PHOTO MODE (Free Camera)
+      // Damping player movement
+      vel.set(0, 0, 0);
+      setIsMoving(false);
+      setIsSprinting(false);
+      animateWalk(refs, 0, 0, 0, false, 0);
+
+      // Initialize free cam to current player cam position if not done
+      if (!freeCamInitialized.current) {
+        const initialCamPos = new THREE.Vector3(
+          pp.x + Math.sin(yaw) * CAM_DISTANCE,
+          pp.y + CAM_HEIGHT,
+          pp.z + Math.cos(yaw) * CAM_DISTANCE
+        );
+        freeCamPosRef.current.copy(initialCamPos);
+        freeCamInitialized.current = true;
+      }
+
+      // Fly free cam based on input
+      if (hasInput) {
+        // Move in the actual 3D direction camera is facing
+        const camDir = new THREE.Vector3();
+        camera.getWorldDirection(camDir);
+        const camRight = new THREE.Vector3().crossVectors(camDir, new THREE.Vector3(0,1,0)).normalize();
+        
+        const moveVec = new THREE.Vector3();
+        if (keysRef.current['w']) moveVec.add(camDir);
+        if (keysRef.current['s']) moveVec.sub(camDir);
+        if (keysRef.current['d']) moveVec.sub(camRight); // right vector is left-handed depending on cross
+        if (keysRef.current['a']) moveVec.add(camRight);
+
+        moveVec.normalize().multiplyScalar(30 * delta); // fly speed
+        freeCamPosRef.current.add(moveVec);
+      }
+
+      camera.position.copy(freeCamPosRef.current);
+      
+      // Look forward based on mouse yaw/pitch
+      const targetLook = new THREE.Vector3(
+        freeCamPosRef.current.x + Math.cos(pitch) * -Math.sin(yaw),
+        freeCamPosRef.current.y + Math.sin(pitch),
+        freeCamPosRef.current.z + Math.cos(pitch) * -Math.cos(yaw)
+      );
+      camera.lookAt(targetLook);
+
+    } else if (isBoarded) {
+      // 3. SITTING ON THE BUS
+      vel.set(0, 0, 0);
+      setIsMoving(false);
+      setIsSprinting(false);
+
+      // Force sitting pose
+      if (refs.lThighRef.current && refs.rThighRef.current) {
+        refs.lThighRef.current.rotation.x = -Math.PI / 2;
+        refs.rThighRef.current.rotation.x = -Math.PI / 2;
+        refs.lShinRef.current.rotation.x  = Math.PI / 2.2;
+        refs.rShinRef.current.rotation.x  = Math.PI / 2.2;
+        refs.lArmRef.current.rotation.x   = -Math.PI / 4;
+        refs.rArmRef.current.rotation.x   = -Math.PI / 4;
+        if (refs.hipsRef.current) refs.hipsRef.current.position.y = -0.4;
+      }
+
+      // Seat offset inside the bus local space
+      const seatLocalOffset = new THREE.Vector3(-0.6, 0.52, -0.3);
+      seatLocalOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), busRotation);
+      const seatWorldPos = new THREE.Vector3(...busPosition).add(seatLocalOffset);
+      
+      pp.copy(seatWorldPos);
+      playerRef.current.rotation.y = busRotation;
+
+      if (cameraMode === 'third') {
+        // Chase view behind the bus
+        const chasePos = new THREE.Vector3(
+          busPosition[0] + Math.sin(busRotation) * 11,
+          busPosition[1] + 5.2,
+          busPosition[2] + Math.cos(busRotation) * 11
+        );
+        camera.position.lerp(chasePos, 0.1);
+        camera.lookAt(busPosition[0], busPosition[1] + 1.2, busPosition[2]);
+      } else {
+        // First person seat view
+        const headWorldPos = new THREE.Vector3(pp.x, pp.y + 1.35, pp.z);
+        camera.position.copy(headWorldPos);
+        const lookTarget = new THREE.Vector3(
+          headWorldPos.x + Math.cos(pitch) * -Math.sin(yaw),
+          headWorldPos.y + Math.sin(pitch),
+          headWorldPos.z + Math.cos(pitch) * -Math.cos(yaw)
+        );
+        camera.lookAt(lookTarget);
+      }
+
+      freeCamInitialized.current = false;
+
     } else {
-      vel.lerp(new THREE.Vector3(0, 0, 0), DECEL);
-    }
+      // 4. NORMAL PLAYER MODE
+      // Reset drone offset and hips position
+      if (refs.hipsRef.current) refs.hipsRef.current.position.y = 0;
+      droneOffsetRef.current.set(0, 0, 0);
+      freeCamInitialized.current = false;
 
-    const moving = vel.lengthSq() > 0.00005;
-    setIsMoving(moving);
-    setIsSprinting(sprint && hasInput);
+      // Smooth velocity
+      if (hasInput) {
+        inputDir.normalize().multiplyScalar(topSpeed);
+        vel.lerp(inputDir, ACCEL);
+      } else {
+        vel.lerp(new THREE.Vector3(0, 0, 0), DECEL);
+      }
 
-    if (moving) {
-      const nextPos = playerRef.current.position.clone().add(vel);
-      nextPos.x = Math.max(-110, Math.min(110, nextPos.x));
-      nextPos.z = Math.max(-130, Math.min(90,  nextPos.z));
-      playerRef.current.position.copy(nextPos);
+      const moving = vel.lengthSq() > 0.00005;
+      setIsMoving(moving);
+      setIsSprinting(sprint && hasInput);
 
-      // Smoothly rotate character to face movement direction
-      const targetYaw = Math.atan2(-vel.x, -vel.z);
-      const curYaw    = playerRef.current.rotation.y;
-      // Shortest-path yaw lerp
-      let diff = targetYaw - curYaw;
-      while (diff >  Math.PI) diff -= 2 * Math.PI;
-      while (diff < -Math.PI) diff += 2 * Math.PI;
-      playerRef.current.rotation.y += diff * 0.14;
+      if (moving) {
+        const nextPos = pp.clone().add(vel);
+        nextPos.x = Math.max(-110, Math.min(110, nextPos.x));
+        nextPos.z = Math.max(-130, Math.min(90,  nextPos.z));
+        pp.copy(nextPos);
 
-      walkPhase.current += vel.length() * (sprint ? 9 : 7);
-    }
+        // Smoothly rotate character to face movement direction
+        const targetYaw = Math.atan2(-vel.x, -vel.z);
+        const curYaw    = playerRef.current.rotation.y;
+        let diff = targetYaw - curYaw;
+        while (diff >  Math.PI) diff -= 2 * Math.PI;
+        while (diff < -Math.PI) diff += 2 * Math.PI;
+        playerRef.current.rotation.y += diff * 0.14;
 
-    // GTA-style walk animation
-    const swing = moving ? (sprint ? 0.72 : 0.52) : 0;
-    const knee  = moving ? (sprint ? 0.88 : 0.68) : 0;
-    animateWalk(refs, walkPhase.current, swing, knee, moving, 0.045);
+        walkPhase.current += vel.length() * (sprint ? 9 : 7);
+      }
 
-    playerRef.current.position.y = moving ? Math.abs(Math.sin(walkPhase.current)) * 0.012 : 0;
+      // GTA walk cycle
+      const swing = moving ? (sprint ? 0.72 : 0.52) : 0;
+      const knee  = moving ? (sprint ? 0.88 : 0.68) : 0;
+      animateWalk(refs, walkPhase.current, swing, knee, moving, 0.045);
 
-    // Camera
-    const pp = playerRef.current.position;
-    setPlayerPosition([pp.x, pp.y, pp.z]);
-    const lookTarget = new THREE.Vector3(
-      pp.x + Math.cos(pitch) * -Math.sin(yaw),
-      pp.y + 2 + Math.sin(pitch),
-      pp.z + Math.cos(pitch) * -Math.cos(yaw)
-    );
-    if (cameraMode === 'third') {
-      camera.position.lerp(new THREE.Vector3(
-        pp.x + Math.sin(yaw) * CAM_DISTANCE,
-        pp.y + CAM_HEIGHT + pitch * 4,
-        pp.z + Math.cos(yaw) * CAM_DISTANCE
-      ), 0.1);
-      camera.lookAt(lookTarget);
-    } else {
-      camera.position.set(pp.x, pp.y + 1.8, pp.z);
-      camera.lookAt(lookTarget);
+      playerRef.current.position.y = moving ? Math.abs(Math.sin(walkPhase.current)) * 0.012 : 0;
+
+      // Standard camera follow
+      const lookTarget = new THREE.Vector3(
+        pp.x + Math.cos(pitch) * -Math.sin(yaw),
+        pp.y + 2 + Math.sin(pitch),
+        pp.z + Math.cos(pitch) * -Math.cos(yaw)
+      );
+
+      if (cameraMode === 'third') {
+        camera.position.lerp(new THREE.Vector3(
+          pp.x + Math.sin(yaw) * CAM_DISTANCE,
+          pp.y + CAM_HEIGHT + pitch * 4,
+          pp.z + Math.cos(yaw) * CAM_DISTANCE
+        ), 0.1);
+        camera.lookAt(lookTarget);
+      } else {
+        camera.position.set(pp.x, pp.y + 1.8, pp.z);
+        camera.lookAt(lookTarget);
+      }
     }
 
     // Building proximity

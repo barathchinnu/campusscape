@@ -236,12 +236,15 @@ export default function HUD() {
           border: '1px solid rgba(255,255,255,0.15)',
         }}>
           {[
-            { key: 'WASD', desc: 'Move' },
+            { key: 'WASD / ↑↓←→', desc: 'Move' },
             { key: 'SHIFT', desc: 'Sprint' },
             { key: 'MOUSE', desc: 'Look' },
-            { key: 'E', desc: 'Enter Building' },
-            { key: 'V', desc: 'Camera' },
-            { key: 'CLICK', desc: 'Lock Mouse' },
+            { key: 'E', desc: 'Action' },
+            { key: 'B', desc: 'Board Bus 🚌' },
+            { key: 'C', desc: 'Camera View' },
+            { key: 'G', desc: 'Drone View 🚁' },
+            { key: 'P', desc: 'Photo Mode 📸' },
+            { key: 'V', desc: 'Voice Assistant 🤖' },
           ].map((c, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <span style={{

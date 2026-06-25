@@ -115,8 +115,31 @@ export default function InfoPanel() {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
+        gap: 10,
       }}>
-        <span style={{ color: '#666', fontSize: 12 }}>Press ESC or click ✕ to close</span>
+        {name.toLowerCase().includes('block') ? (
+          <button 
+            onClick={() => {
+              useGameStore.getState().setClassroomBuilding(activeBuilding);
+              closeInfoPanel();
+            }}
+            style={{
+              background: '#2ecc71',
+              border: 'none',
+              color: '#fff',
+              padding: '8px 16px',
+              borderRadius: 8,
+              cursor: 'pointer',
+              fontSize: 13,
+              fontWeight: 700,
+              boxShadow: '0 4px 12px rgba(46,204,113,0.3)',
+            }}
+          >
+            🏫 Enter Classroom
+          </button>
+        ) : (
+          <span style={{ color: '#666', fontSize: 12 }}>Press ESC or click ✕ to close</span>
+        )}
         <button onClick={closeInfoPanel} style={{
           background: accentColor,
           border: 'none',

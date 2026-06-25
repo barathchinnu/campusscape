@@ -107,4 +107,31 @@ export const useGameStore = create((set, get) => ({
 
   showMissions: true,
   toggleMissions: () => set((s) => ({ showMissions: !s.showMissions })),
+
+  droneMode: false,
+  toggleDroneMode: () => set((s) => ({ droneMode: !s.droneMode, photoMode: false })), // cancel photo mode if entering drone
+
+  photoMode: false,
+  togglePhotoMode: () => set((s) => ({ photoMode: !s.photoMode, droneMode: false })), // cancel drone mode if entering photo
+
+  gpsTarget: null,
+  setGpsTarget: (target) => set({ gpsTarget: target }),
+
+  classroomBuilding: null,
+  setClassroomBuilding: (building) => set({ classroomBuilding: building }),
+
+  voiceAssistantActive: false,
+  setVoiceAssistantActive: (active) => set({ voiceAssistantActive: active }),
+
+  isBoarded: false,
+  setIsBoarded: (boarded) => set({ isBoarded: boarded }),
+
+  busPosition: [70, 0, 80],
+  setBusPosition: (pos) => set({ busPosition: pos }),
+
+  busRotation: 0,
+  setBusRotation: (rot) => set({ busRotation: rot }),
+
+  busTargetStop: null,
+  setBusTargetStop: (stopIdx) => set({ busTargetStop: stopIdx }),
 }));
